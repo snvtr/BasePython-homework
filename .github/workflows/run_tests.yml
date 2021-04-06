@@ -45,6 +45,6 @@ jobs:
         flake8 . --count --exit-zero --max-complexity=10 --max-line-length=127 --statistics
     - name: Test with pytest
       run: |
-        pytest testing -s -vv
+        pytest testing -s -vv -rsx
       env:
         PG_CONN_URI: postgresql://postgres:secretpassword@localhost:5432/postgres
