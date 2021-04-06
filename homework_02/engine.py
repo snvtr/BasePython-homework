@@ -1,11 +1,13 @@
 """
 create dataclass `Engine`
 """
+from dataclasses import dataclass, field
 
-class Engine():
+@dataclass
+class Engine:
     """ defaults """
-    volume = None
-    pistons = None
+    volume: int
+    pistons: int
 
 
     def __init__(self, volume, pistons):

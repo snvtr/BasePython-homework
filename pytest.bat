@@ -1,1 +1,2 @@
-C:\Users\user\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0\LocalCache\local-packages\Python38\Scripts\pytest.exe %1 %2 %3 %4 %5 %6 %7 %8 %9
+REM C:\Users\user\AppData\Local\Packages\PythonSoftwareFoundation.Python.3.8_qbz5n2kfra8p0\LocalCache\local-packages\Python38\Scripts\pytest.exe %1 %2 %3 %4 %5 %6 %7 %8 %9
+pytest.exe %1 %2 %3 %4 %5 %6 %7 %8 %9
