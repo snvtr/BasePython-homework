@@ -40,6 +40,8 @@ class User(Base):
     email = Column(String(255), nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow) # , server_default=func.now()
 
+    posts = relationship("Post", back_populates="user")
+
 class Post(Base):
     __tablename__ = "posts"
 
@@ -49,6 +51,8 @@ class Post(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow) # , server_default=func.now()
     created_by = Column(Integer, ForeignKey(User.id))
     parent_id  = Column(Integer, default=-1)
+
+    user = relationship(User, back_populates="posts")
 
 if __name__ == '__main__':
     Base.metadata.create_all()
