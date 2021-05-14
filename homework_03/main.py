@@ -79,10 +79,6 @@ async def async_create_posts():
 
 
 async def async_main():
-    #await asyncio.gather(
-    #    create_users(),
-    #    create_posts()
-    #    )
     await async_create_users()
     await async_create_posts()
 
