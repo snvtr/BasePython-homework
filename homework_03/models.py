@@ -27,10 +27,9 @@ from sqlalchemy import (
 PG_CONN_URI = os.environ.get("SQLALCHEMY_PG_CONN_URI") or "postgresql://postgres:12345@localhost/postgres" #+asyncpg
 
 engine = create_engine(PG_CONN_URI, echo=True)
-Base   = declarative_base(bind=engine)
-
 session_factory = sessionmaker(bind=engine)
 Session = scoped_session(session_factory)
+Base    = declarative_base(bind=engine)
 
 class User(Base):
     __tablename__ = "users"
@@ -41,6 +40,12 @@ class User(Base):
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow) # , server_default=func.now()
 
     posts = relationship("Post", back_populates="user")
+
+    def __str__(self):
+        return f"{self.__class__.__name__}(id={self.id}, username={self.username!r}, is_staff={self.email}, created_at={self.created_at!r})"
+
+    def __repr__(self):
+        return str(self)
 
 class Post(Base):
     __tablename__ = "posts"
@@ -54,5 +59,12 @@ class Post(Base):
 
     user = relationship(User, back_populates="posts")
 
-if __name__ == '__main__':
-    Base.metadata.create_all()
+    def __str__(self):
+        return f"{self.__class__.__name__}(id={self.id}, title={self.title!r}, body={self.body}, created_at={self.created_at!r}, created_by={self.created_by!r}, parent_id={self.parent_id!r})"
+
+    def __repr__(self):
+        return str(self)
+
+
+#if __name__ == '__main__':
+#    Base.metadata.create_all()

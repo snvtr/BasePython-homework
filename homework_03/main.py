@@ -13,14 +13,50 @@
 - закрытие соединения с БД
 """
 
+import asyncio
+from models import Session, Base, User, Post
+
+async def create_users():
+    session = Session()
+
+    admin = User(username="admin", email="admin@admin")
+    guest = User(username="guest", email="guest@guest")
+
+    session.add(admin)
+    session.add(guest)
+    session.commit()
+    session.close()
+
+
+async def create_posts():
+    session = Session()
+
+    admin: User = session.query(User).filter_by(username="admin").one()
+
+    post_one = Post(title="Post One", body="Message One", created_by=admin.id)
+    post_two = Post(title="Post Two", body="Message Two", created_by=admin.id)
+
+    session.add(post_one)
+    session.add(post_two)
+    session.commit()
+    session.close()
+
 
 async def async_main():
-    pass
+    #await asyncio.gather(
+    #    create_users(),
+    #    create_posts()
+    #    )
+    await create_users()
+    await create_posts()
+
+def init_schema():
+    Base.metadata.create_all()
 
 
 def main():
-    pass
-
+    asyncio.run(async_main())
 
 if __name__ == "__main__":
+    init_schema()
     main()
