@@ -27,6 +27,21 @@ async def create_users():
     session.commit()
     session.close()
 
+async def create_one_user(one_user):
+    session = Session()
+    session.add(one_user)
+    session.commit()
+    session.close()
+
+async def async_create_users():
+
+    admin = User(username="admin", email="admin@admin")
+    guest = User(username="guest", email="guest@guest")
+
+    await asyncio.gather(
+        create_one_user(admin),
+        create_one_user(guest),
+    )
 
 async def create_posts():
     session = Session()
@@ -42,13 +57,35 @@ async def create_posts():
     session.close()
 
 
+async def create_one_post(one_post):
+    session = Session()
+    session.add(one_post)
+    session.commit()
+    session.close()
+
+async def async_create_posts():
+
+    session = Session()
+    admin: User = session.query(User).filter_by(username="admin").one()
+    session.close()
+
+    post_one = Post(title="Post One", body="Message One", created_by=admin.id)
+    post_two = Post(title="Post Two", body="Message Two", created_by=admin.id)
+
+    await asyncio.gather(
+        create_one_post(post_one),
+        create_one_post(post_two),
+    )
+
+
 async def async_main():
     #await asyncio.gather(
     #    create_users(),
     #    create_posts()
     #    )
-    await create_users()
-    await create_posts()
+    await async_create_users()
+    await async_create_posts()
+
 
 def init_schema():
     Base.metadata.create_all()
@@ -56,6 +93,7 @@ def init_schema():
 
 def main():
     asyncio.run(async_main())
+
 
 if __name__ == "__main__":
     init_schema()
