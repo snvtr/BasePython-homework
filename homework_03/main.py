@@ -13,14 +13,48 @@
 - закрытие соединения с БД
 """
 
+import asyncio
+from models import Session, Base, User, Post
+from jsonplaceholder_requests import *
+
+
+async def create_one_user(one_user):
+    session = Session()
+    session.add(one_user)
+    session.commit()
+    session.close()
+
+
+async def create_one_post(one_post):
+    session = Session()
+    session.add(one_post)
+    session.commit()
+    session.close()
+
 
 async def async_main():
-    pass
+
+    ext_users = await async_fetch_users(USERS_DATA_URL)
+    ext_posts = await async_fetch_posts(POSTS_DATA_URL)
+
+    try:
+        asyncio.gather([await create_one_user(User(username=i["username"], name=i["name"], email=i["email"])) for i in ext_users])
+    except:
+        print("users(): oops")
+    try:
+        asyncio.gather([await create_one_post(Post(title=i["title"], body=i["body"], user_id=i["userId"])) for i in ext_posts])
+    except:
+        print("posts(): oops")
+
+
+def init_schema():
+    Base.metadata.create_all()
 
 
 def main():
-    pass
+    asyncio.run(async_main())
 
 
 if __name__ == "__main__":
+    init_schema()
     main()
