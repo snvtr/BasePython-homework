@@ -35,8 +35,9 @@ class User(Base):
     __tablename__ = "users"
 
     id = Column(Integer, primary_key=True)
-    username = Column(String(32), unique=True, nullable=False)
-    email = Column(String(255), nullable=False)
+    username = Column(String(100), unique=True, nullable=False)
+    name = Column(String(100), unique=True, nullable=False)
+    email = Column(String(500), nullable=False)
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow) # , server_default=func.now()
 
     posts = relationship("Post", back_populates="user")
@@ -51,11 +52,11 @@ class Post(Base):
     __tablename__ = "posts"
 
     id = Column(Integer, primary_key=True)
-    title = Column(String(50), unique=True, nullable=False)
+    title = Column(String(100), unique=True, nullable=False)
     body = Column(String(1000), nullable=False)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow) # , server_default=func.now()
-    created_by = Column(Integer, ForeignKey(User.id))
-    parent_id  = Column(Integer, default=-1)
+#    created_at = Column(DateTime, nullable=False, default=datetime.utcnow) # , server_default=func.now()
+    user_id = Column(Integer, ForeignKey(User.id))
+#    parent_id  = Column(Integer, default=-1)
 
     user = relationship(User, back_populates="posts")
 
@@ -66,5 +67,5 @@ class Post(Base):
         return str(self)
 
 
-#if __name__ == '__main__':
-#    Base.metadata.create_all()
+if __name__ == '__main__':
+    Base.metadata.create_all()

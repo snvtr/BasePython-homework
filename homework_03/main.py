@@ -15,44 +15,12 @@
 
 import asyncio
 from models import Session, Base, User, Post
+from jsonplaceholder_requests import *
 
-async def create_users():
-    session = Session()
-
-    admin = User(username="admin", email="admin@admin")
-    guest = User(username="guest", email="guest@guest")
-
-    session.add(admin)
-    session.add(guest)
-    session.commit()
-    session.close()
 
 async def create_one_user(one_user):
     session = Session()
     session.add(one_user)
-    session.commit()
-    session.close()
-
-async def async_create_users():
-
-    admin = User(username="admin", email="admin@admin")
-    guest = User(username="guest", email="guest@guest")
-
-    await asyncio.gather(
-        create_one_user(admin),
-        create_one_user(guest),
-    )
-
-async def create_posts():
-    session = Session()
-
-    admin: User = session.query(User).filter_by(username="admin").one()
-
-    post_one = Post(title="Post One", body="Message One", created_by=admin.id)
-    post_two = Post(title="Post Two", body="Message Two", created_by=admin.id)
-
-    session.add(post_one)
-    session.add(post_two)
     session.commit()
     session.close()
 
@@ -63,24 +31,20 @@ async def create_one_post(one_post):
     session.commit()
     session.close()
 
-async def async_create_posts():
-
-    session = Session()
-    admin: User = session.query(User).filter_by(username="admin").one()
-    session.close()
-
-    post_one = Post(title="Post One", body="Message One", created_by=admin.id)
-    post_two = Post(title="Post Two", body="Message Two", created_by=admin.id)
-
-    await asyncio.gather(
-        create_one_post(post_one),
-        create_one_post(post_two),
-    )
-
 
 async def async_main():
-    await async_create_users()
-    await async_create_posts()
+
+    ext_users = await async_fetch_users(USERS_DATA_URL)
+    ext_posts = await async_fetch_posts(POSTS_DATA_URL)
+
+    try:
+        asyncio.gather([await create_one_user(User(username=i["username"], name=i["name"], email=i["email"])) for i in ext_users])
+    except:
+        print("users(): oops")
+    try:
+        asyncio.gather([await create_one_post(Post(title=i["title"], body=i["body"], user_id=i["userId"])) for i in ext_posts])
+    except:
+        print("posts(): oops")
 
 
 def init_schema():
