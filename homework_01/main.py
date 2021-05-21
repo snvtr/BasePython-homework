@@ -48,6 +48,8 @@ def filter_numbers(num_list, condition):
                 if i % j == 0:
                     is_prime = False
                     break
+            if i == 1:
+                is_prime = False
             if is_prime:
                 result.append(i)
 
