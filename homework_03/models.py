@@ -24,7 +24,7 @@ from sqlalchemy import (
     ForeignKey
 )
 
-PG_CONN_URI = os.environ.get("SQLALCHEMY_PG_CONN_URI") or "postgresql://postgres:12345@localhost/postgres" #+asyncpg
+PG_CONN_URI = os.environ.get("SQLALCHEMY_PG_CONN_URI") or "postgresql+asyncpg://postgres:12345@localhost/postgres" #+asyncpg
 
 engine = create_engine(PG_CONN_URI, echo=True)
 session_factory = sessionmaker(bind=engine)
