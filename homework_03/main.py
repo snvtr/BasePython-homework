@@ -14,47 +14,44 @@
 """
 
 import asyncio
-from models import Session, Base, User, Post
+from models import Session, Base, User, Post, engine
 from jsonplaceholder_requests import *
 
 
-async def create_one_user(one_user):
-    session = Session()
-    session.add(one_user)
-    session.commit()
-    session.close()
+async def create_one(one):
+    async with Session() as session:
+        async with session.begin():
+            session.add(one)
+        await session.commit()
 
 
-async def create_one_post(one_post):
-    session = Session()
-    session.add(one_post)
-    session.commit()
-    session.close()
+async def async_init_schema():
+    async with engine.begin() as conn:
+        await conn.run_sync(Base.metadata.drop_all)
+        await conn.run_sync(Base.metadata.create_all)
 
 
 async def async_main():
 
-    ext_users = await async_fetch_users(USERS_DATA_URL)
-    ext_posts = await async_fetch_posts(POSTS_DATA_URL)
+    await async_init_schema()
 
-    try:
-        asyncio.gather([await create_one_user(User(username=i["username"], name=i["name"], email=i["email"])) for i in ext_users])
-    except:
-        print("users(): oops")
-    try:
-        asyncio.gather([await create_one_post(Post(title=i["title"], body=i["body"], user_id=i["userId"])) for i in ext_posts])
-    except:
-        print("posts(): oops")
+    ext_users = await async_fetch_json(USERS_DATA_URL)
+    ext_posts = await async_fetch_json(POSTS_DATA_URL)
 
+    #asyncio.gather([await create_one(User(username=i["username"], name=i["name"], email=i["email"])) for i in ext_users])
+    #asyncio.gather([await create_one(Post(title=i["title"], body=i["body"], user_id=i["userId"])) for i in ext_posts])
 
-def init_schema():
-    Base.metadata.create_all()
+    for i in ext_users:
+        await create_one(User(username=i["username"], name=i["name"], email=i["email"]))
 
+    for i in ext_posts:
+        await create_one(Post(title=i["title"], body=i["body"], user_id=i["userId"]))
+
+    print("done")
 
 def main():
-    asyncio.run(async_main())
-
+    #asyncio.run(async_main())
+    asyncio.get_event_loop().run_until_complete(async_main())
 
 if __name__ == "__main__":
-    init_schema()
     main()
